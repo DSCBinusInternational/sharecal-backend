@@ -1,0 +1,26 @@
+{
+  "bruhcal": {
+    "passcode": "limatigapuluh",
+    "2022": {
+      "5": {
+        "5": [
+          {
+            "name": "Make backend time",
+            "range": ["2022-05-05T20:30:00+07:00", "2022-05-05T22:30:00+07:00"],
+            "notes": "Made in golang"
+          },
+          {
+            "name": "Sleep",
+            "range": ["2022-05-05T23:45:00+07:00", "2022-05-06T08:30:00+07:00"],
+            "notes": "Yes"
+          }
+        ],
+        "7": [{
+          "name": "React Last Day",
+          "range": ["2022-05-07T13:00:00+07:00", "2022-05-07T14:30:00+07:00"],
+          "notes": "Finally ;---;"
+        }]
+      }
+    }    
+  }
+}
