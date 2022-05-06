@@ -18,7 +18,7 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 	mongoClient := db.GetMongo()
 	calCollection := mongoClient.Database("sharecal").Collection("Calendar")
 
-	// dateFormat := "0000-00-00T00:00:00+00:00"
+	// Parse the time to go object
 	startDate, error := time.Parse(time.RFC3339, start)
 	endDate, error2 := time.Parse(time.RFC3339, end)
 
@@ -31,36 +31,47 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 		return
 	}
 
-	calObj := models.Calendar{
-		Passcode: pass,
-		Data: models.YearEntry{
-			startDate.Year(): models.MonthEntry{
-				int(startDate.Month()): models.DayEntry{
-					startDate.Day(): []models.TimeEntry{
-						{
-							Name:  eventName,
-							Time:  []time.Time{startDate, endDate},
-							Notes: notes,
-							Color: color,
-						},
-					},
-				},
-			},
-		},
-		Id: calName,
+	// Create the netry object
+	entry := models.TimeEntry{
+		Name:  eventName,
+		Time:  []time.Time{startDate, endDate},
+		Notes: notes,
+		Color: color,
 	}
 
+	// Try to find the document in mongo. If it does not exist, create it.
 	var result bson.M
 	if err := calCollection.FindOne(context.TODO(), bson.M{
 		"_id": calName,
 	}).Decode(&result); err != nil {
 		// If the database is empty, insert it
-		fmt.Printf("Calendar %s empty, creating", calName)
-		calCollection.InsertOne(context.TODO(), calObj)
+		fmt.Printf("Calendar \"%s\" empty, creating", calName)
+		calCollection.InsertOne(context.TODO(), models.Calendar{
+			Id: calName,
+			Passcode: pass,
+			Data: models.YearEntry{
+				startDate.Year(): models.MonthEntry{
+					int(startDate.Month()): models.DayEntry{
+						startDate.Day(): []models.TimeEntry{
+							entry,
+						},
+					},
+				},
+			},
+		})
 		return
 	}
 
-	calCollection.UpdateOne(context.TODO(), bson.M{"_id": calName}, calObj)
+	// Gets the complete key to update the document
+	dateKey := fmt.Sprintf("data.%d.%d.%d", startDate.Year(), int(startDate.Month()), startDate.Day())
+
+	// Updates the existing document with a new entry
+	calCollection.UpdateOne(
+		context.TODO(),
+		bson.M{"_id": calName},
+		bson.D{
+			{"$push", bson.M{ dateKey: entry }},
+	});
 }
 
 func CheckPasscode(calendar models.Calendar, pass string) bool {

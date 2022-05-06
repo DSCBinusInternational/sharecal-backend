@@ -15,6 +15,7 @@ func Init() {
 	uri := os.Getenv("MONGO_URI")
 	mongo, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
+		fmt.Printf("Unable to connect to mongo server! Check MONGO_URI env");
 		panic(err)
 	}
 	fmt.Printf("Mongo client initialized with URI: %s \n", uri)

@@ -16,5 +16,5 @@ type YearEntry map[int]MonthEntry
 type Calendar struct {
 	Data     YearEntry `json:"data"`
 	Passcode string    `json:"passcode"`
-	Id       string    `json:"_id"`
+	Id       string    `json:"_id" bson:"_id"` // This is important so the attribute `Id` is renamed to _id in mongo (mongo renames using bson)
 }
