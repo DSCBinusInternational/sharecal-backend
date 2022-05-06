@@ -4,5 +4,5 @@ FROM golang:1.16-alpine
 WORKDIR /app
 COPY . .
 RUN go mod download
-RUN go build -o /docker-sharecal
+RUN go build -o ./docker-sharecal
 CMD ["./docker-sharecal"]
