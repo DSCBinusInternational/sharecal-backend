@@ -9,11 +9,12 @@ type TimeEntry struct {
 	Color string      `json:"color"`
 }
 
-type DayEntry map[string][]TimeEntry
-type MonthEntry map[string]DayEntry
-type YearEntry map[string]MonthEntry
+type DayEntry map[int][]TimeEntry
+type MonthEntry map[int]DayEntry
+type YearEntry map[int]MonthEntry
 
 type Calendar struct {
 	Data     YearEntry `json:"data"`
 	Passcode string    `json:"passcode"`
+	Id       string    `json:"_id"`
 }

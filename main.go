@@ -3,34 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"sharecal-backend/controllers"
+	"sharecal-backend/db"
 	"sharecal-backend/models"
 )
-
-// getCalendar - return a
-// func getCalendar(calName string) {
-
-// }
-
-// func addCalendar(start time.Date, end time.Date, eventName string, notes string, calName string, pass string) {
-// 	http.HandleFunc("/encode", func(w http.ResponseWriter, r *htpp.Request) {
-// 		event := Event{
-// 			name:    eventName,
-// 			time[0]: start,
-// 			time[1]: end,
-// 			notes:   notes
-// 		}
-// 		json.NewEncoder(w).Encode(event)
-// 	})
-// 	http.ListenAndServe(":8080", nil)
-// }
-
-// func checkPasscode(calName Calendar.Bruhcal, pass string) {
-// 	if pass == calName.Passcode {
-// 		fmt.Println("Pass is correct")
-// 	} else {
-// 		fmt.Println("Pass is incorrect")
-// 	}
-// }
 
 func main() {
 	var jsonData = `{
@@ -63,6 +39,8 @@ func main() {
 		}
 	}`
 
+	db.Init()
+
 	var data models.Calendar
 	var err = json.Unmarshal([]byte(jsonData), &data)
 	if err != nil {
@@ -70,9 +48,12 @@ func main() {
 		return
 	}
 
-	fmt.Println(data.Data["2022"]["5"]["7"])
-	bs, _ := json.Marshal(data)
-	fmt.Println(string(bs))
-	fmt.Println(data.Passcode)
-	// checkPasscode("bruhcal", "rwfnwxe")
+	controllers.AddCalendar("StephCal", "2022-05-07T13:00:00+07:00", "2022-05-07T14:30:00+07:00", "Halloween", "Rememeber to dress up", "sixtynine", "#000000")
+
+	// fmt.Println(data.Data["2022"]["5"]["7"])
+	// bs, _ := json.Marshal(data)
+	// fmt.Println(string(bs))
+	// fmt.Println(data.Passcode)
+	// fmt.Println(controllers.CheckPasscode(data, "rwfnwxe"))
+	// fmt.Println(controllers.CheckPasscode(data, "limatigapuluh"))
 }
