@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"sharecal-backend/controllers"
 	"sharecal-backend/db"
 	"sharecal-backend/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -48,7 +51,7 @@ func main() {
 		return
 	}
 
-	controllers.AddCalendar("StephCal", "2022-05-03T10:00:00+07:00", "2022-05-07T14:30:00+07:00", "Halloween", "Rememeber to dress up", "limatigapuluh", "#000000")
+	// controllers.AddCalendar("StephCal", "2022-05-03T10:00:00+07:00", "2022-05-07T14:30:00+07:00", "Halloween", "Rememeber to dress up", "limatigapuluh", "#000000")
 
 	// fmt.Println(data.Data["2022"]["5"]["7"])
 	// bs, _ := json.Marshal(data)
@@ -56,4 +59,19 @@ func main() {
 	// fmt.Println(data.Passcode)
 	// fmt.Println(controllers.CheckPasscode(data, "rwfnwxe"))
 	// fmt.Println(controllers.CheckPasscode(data, "limatigapuluh"))
+
+	r := gin.Default()
+	r.GET("cal/:name", controllers.GetFunc )
+	r.POST("cal/:name", func (context *gin.Context) {
+		body := Body{}
+			if err := context.BindJSON(&body);err !=nil{
+				return
+			}
+			fmt.Prinln(body)
+		})
+	}
+
+	r.PUT("cal/:name", controllers.PutFunc)
+	 
+	r.Run()
 }

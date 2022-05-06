@@ -18,3 +18,13 @@ type Calendar struct {
 	Passcode string    `json:"passcode"`
 	Id       string    `json:"_id" bson:"_id"` // This is important so the attribute `Id` is renamed to _id in mongo (mongo renames using bson)
 }
+
+type CalendarEntry struct {
+    CalName string 		`json:"calname"`		
+    Start string   		`json:"start"`	
+    End string			`json:"end"`	
+    EventName string 	`json:"eventname"`	
+    Notes string		`json:"notes"`	
+    Pass string			`json:"pass"`	
+    Color string 		`json:"color"`	
+}

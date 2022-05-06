@@ -6,7 +6,7 @@ import (
 	"sharecal-backend/db"
 	"sharecal-backend/models"
 	"time"
-
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -76,4 +76,29 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 
 func CheckPasscode(calendar models.Calendar, pass string) bool {
 	return pass == calendar.Passcode
+}
+
+
+func GetFunc(ctx *gin.Context) {
+	name := ctx.Param("name")
+	ctx.JSON(200, gin.H{
+		"message":"Hai JaON",
+	})
+	fmt.Println(name)
+}
+
+func PostFunc(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{
+		"message":"Huha",
+	})
+}
+
+func PutFunc(ctx *gin.Context) {
+	ctx.JSON(200, gin.H{
+		"message":"heoho",
+	})
+}
+
+func HeloFunc(c *gin.Context){
+	c.JSON(200, gin.H{"status":"helo"})
 }
