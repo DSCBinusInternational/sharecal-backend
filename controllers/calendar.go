@@ -10,9 +10,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-// getCalendar - return a
-// func getCalendar(calName string) {
-// }
+func GetCalendar(name string) (*models.Calendar, error) {
+	var result models.Calendar
+	mongoClient := db.GetMongo()
+	calCollection := mongoClient.Database("sharecal").Collection("Calendar")
+	// return pass == calCollection
+	if err := calCollection.FindOne(context.TODO(), bson.M{
+		"_id": name,
+	}).Decode(&result); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return &result, nil
+}
 
 func AddCalendar(calName string, start string, end string, eventName string, notes string, pass string, color string) {
 	mongoClient := db.GetMongo()
@@ -47,7 +57,7 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 		// If the database is empty, insert it
 		fmt.Printf("Calendar \"%s\" empty, creating", calName)
 		calCollection.InsertOne(context.TODO(), models.Calendar{
-			Id: calName,
+			Id:       calName,
 			Passcode: pass,
 			Data: models.YearEntry{
 				startDate.Year(): models.MonthEntry{
@@ -70,10 +80,28 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 		context.TODO(),
 		bson.M{"_id": calName},
 		bson.D{
-			{"$push", bson.M{ dateKey: entry }},
-	});
+			{"$push", bson.M{dateKey: entry}},
+		})
+
+	// data, err3 := bson.Marshal(result)
+	// if err3 != nil {
+	// 	fmt.Println(err3.Error())
+	// 	return
+	// }
+	// fmt.Println(data)
+
 }
 
-func CheckPasscode(calendar models.Calendar, pass string) bool {
-	return pass == calendar.Passcode
+func CheckPasscode(name string, pass string) (bool, error) {
+	var result bson.M
+	mongoClient := db.GetMongo()
+	calCollection := mongoClient.Database("sharecal").Collection("Calendar")
+	// return pass == calCollection
+	if err := calCollection.FindOne(context.TODO(), bson.M{
+		"_id": name,
+	}).Decode(&result); err != nil {
+		fmt.Println(err)
+		return false, err
+	}
+	return pass == result["passcode"], nil
 }
