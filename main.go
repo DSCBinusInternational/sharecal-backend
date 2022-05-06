@@ -48,7 +48,7 @@ func main() {
 		return
 	}
 
-	controllers.AddCalendar("StephCal", "2022-05-07T13:00:00+07:00", "2022-05-07T14:30:00+07:00", "Halloween", "Rememeber to dress up", "sixtynine", "#000000")
+	controllers.AddCalendar("StephCal", "2022-05-03T10:00:00+07:00", "2022-05-07T14:30:00+07:00", "Halloween", "Rememeber to dress up", "limatigapuluh", "#000000")
 
 	// fmt.Println(data.Data["2022"]["5"]["7"])
 	// bs, _ := json.Marshal(data)

@@ -18,16 +18,16 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 	mongoClient := db.GetMongo()
 	calCollection := mongoClient.Database("sharecal").Collection("Calendar")
 
-	dateFormat := "2022-05-05T20:30:00+07:00"
-	startDate, error := time.Parse(dateFormat, start)
-	endDate, error2 := time.Parse(dateFormat, end)
+	// dateFormat := "0000-00-00T00:00:00+00:00"
+	startDate, error := time.Parse(time.RFC3339, start)
+	endDate, error2 := time.Parse(time.RFC3339, end)
 
 	if error != nil {
 		fmt.Println(error)
 		return
 	}
 	if error2 != nil {
-		fmt.Println(error)
+		fmt.Println(error2)
 		return
 	}
 
