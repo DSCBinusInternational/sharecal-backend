@@ -12,9 +12,8 @@ func main() {
 	db.Init()
 	r := gin.Default()
 	r.GET("cal/:name", controllers.GetFunc)
+	r.GET("cal/:name/passcheck/:pass", controllers.PassCheckFunc)
 	r.POST("cal/:name", controllers.PostFunc)
-	r.PUT("cal/:name", controllers.PutFunc)
-
 	r.Run()
 
 }

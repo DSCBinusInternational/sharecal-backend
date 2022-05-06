@@ -20,7 +20,6 @@ type Calendar struct {
 }
 
 type CalendarEntry struct {
-    CalName string 		`json:"calname"`		
     Start string   		`json:"start"`	
     End string			`json:"end"`	
     EventName string 	`json:"eventname"`	

@@ -3,9 +3,11 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sharecal-backend/db"
 	"sharecal-backend/models"
 	"time"
+
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -14,7 +16,6 @@ func GetCalendar(name string) (*models.Calendar, error) {
 	var result models.Calendar
 	mongoClient := db.GetMongo()
 	calCollection := mongoClient.Database("sharecal").Collection("Calendar")
-	// return pass == calCollection
 	if err := calCollection.FindOne(context.TODO(), bson.M{
 		"_id": name,
 	}).Decode(&result); err != nil {
@@ -24,7 +25,7 @@ func GetCalendar(name string) (*models.Calendar, error) {
 	return &result, nil
 }
 
-func AddCalendar(calName string, start string, end string, eventName string, notes string, pass string, color string) {
+func AddCalendar(calName string, start string, end string, eventName string, notes string, pass string, color string) bool {
 	mongoClient := db.GetMongo()
 	calCollection := mongoClient.Database("sharecal").Collection("Calendar")
 
@@ -34,11 +35,11 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 
 	if error != nil {
 		fmt.Println(error)
-		return
+		return false
 	}
 	if error2 != nil {
 		fmt.Println(error2)
-		return
+		return false
 	}
 
 	// Create the netry object
@@ -69,7 +70,11 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 				},
 			},
 		})
-		return
+		return true
+	}
+
+	if result["passcode"] != pass {
+		return false
 	}
 
 	// Gets the complete key to update the document
@@ -82,14 +87,13 @@ func AddCalendar(calName string, start string, end string, eventName string, not
 		bson.D{
 			{"$push", bson.M{dateKey: entry}},
 		})
-
+	return true
 	// data, err3 := bson.Marshal(result)
 	// if err3 != nil {
 	// 	fmt.Println(err3.Error())
 	// 	return
 	// }
 	// fmt.Println(data)
-
 }
 
 func CheckPasscode(name string, pass string) (bool, error) {
@@ -106,27 +110,42 @@ func CheckPasscode(name string, pass string) (bool, error) {
 	return pass == result["passcode"], nil
 }
 
-
 func GetFunc(ctx *gin.Context) {
 	name := ctx.Param("name")
-	ctx.JSON(200, gin.H{
-		"message":"Hai JaON",
-	})
-	fmt.Println(name)
+	cal, err := GetCalendar(name)
+	if err == nil {
+		ctx.JSON(200, cal)
+	} else {
+		fmt.Println(err)
+		ctx.JSON(404, gin.H{"success": false})
+	}
 }
 
 func PostFunc(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"message":"Huha",
-	})
+	body := models.CalendarEntry{}
+	name := ctx.Param("name")
+
+	if err := ctx.BindJSON(&body); err != nil {
+		ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if AddCalendar(name, body.Start, body.End, body.EventName, body.Notes, body.Pass, body.Color) {
+		ctx.JSON(200, gin.H{
+			"success": true,
+		})
+	} else {
+		ctx.JSON(400, gin.H{
+			"success": false,
+		})
+	}
 }
 
-func PutFunc(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"message":"heoho",
-	})
-}
-
-func HeloFunc(c *gin.Context){
-	c.JSON(200, gin.H{"status":"helo"})
+func PassCheckFunc(ctx *gin.Context) {
+	res, err := CheckPasscode(ctx.Param("name"), ctx.Param("pass"))
+	if err == nil {
+		ctx.JSON(200, gin.H{"success": true, "result": res})
+	} else {
+		ctx.JSON(404, gin.H{"success": false})
+	}
 }
